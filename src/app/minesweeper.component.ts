@@ -52,7 +52,7 @@ export class MinesweeperComponent {
       }
 
 
-      if (item.isRevealed && !item.isBomb) {
+      if (item.isRevealed && !item.isBomb && item.mineNeighbours > 0 ) {
         return item.mineNeighbours;
       }
 
@@ -60,8 +60,8 @@ export class MinesweeperComponent {
         return '<i class="fa fa-flag" aria-hidden="true"></i>';
       }
 
-      if (!item.isRevealed) {
-        return '.';
+      if (!item.isRevealed || (item.isRevealed && !item.isBomb && item.mineNeighbours === 0 )) {
+        return '<i class="fa fa-fw" aria-hidden="true"></i>';
       }
 
   }
@@ -115,6 +115,9 @@ addOneToNeighbour( row, col) {
       if (currentItem.mineNeighbours === 0) {
         currentItem.isRevealed = true;
         this.checkNeighbours(currentItem.row, currentItem.col);
+      }
+      if (currentItem.mineNeighbours > 0 && !currentItem.isBomb) {
+          currentItem.isRevealed = true;
       }
     }
   }
