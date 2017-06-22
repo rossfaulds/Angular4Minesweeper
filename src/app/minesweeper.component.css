@@ -1,0 +1,25 @@
+.griditemhidden,.false {
+    width: 20px;
+    height: 20px;
+    text-align:center;
+    border:2px outset #DCDCDC;
+    background:#f5f5f5;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+    }
+
+.griditemrevealed,.true{
+    width: 20px;
+    height: 20px;
+    text-align:center;
+    border:2px inset #DCDCDC;
+    background:#f5f5f5;
+    display: inline-block;
+    padding: 0 ;
+    margin: 0;
+}
+
+.fa-flag {
+   color : #FF0000;
+}

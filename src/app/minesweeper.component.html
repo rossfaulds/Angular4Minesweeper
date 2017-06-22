@@ -1,0 +1,10 @@
+<div style="display: inline" *ngFor="let item of grid; let i=index">
+<div [ngClass]="{griditemrevealed:item.isRevealed==true,griditemhidden:item.isRevealed==false}"
+      (click)="reveal( item, $event)"
+      (contextmenu)="flag( item, $event)" 
+      [innerHTML] = "outputGridType(item)"></div>
+<br  *ngIf="(i+1) % 10 === 0"/>
+</div>
+
+
+
