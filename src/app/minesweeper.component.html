@@ -3,7 +3,7 @@
       (click)="reveal( item, $event)"
       (contextmenu)="flag( item, $event)" 
       [innerHTML] = "outputGridType(item)"></div>
-<br  *ngIf="(i+1) % 10 === 0"/>
+<br  *ngIf="(i+1) % gridsize === 0"/>
 </div>
 
 
