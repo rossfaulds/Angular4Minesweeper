@@ -96,14 +96,21 @@ export class MinesweeperComponent {
      this.addOneToNeighbour(row + 1, col + 1);
  }
 
-addOneToNeighbour( row, col) {
+withinBounds( row, col ) {
     if (row < 0 || row > 9) {
-        return;
+        return false;
     }
-
     if (col < 0 || col > 9 ) {
+      return false;
+    }
+    return true;
+
+}
+addOneToNeighbour( row, col) {
+    if (!this.withinBounds(row, col)) {
       return;
     }
+
     this.grid[ row * this.gridSize + col].mineNeighbours += 1;
  }
 
