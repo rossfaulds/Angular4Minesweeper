@@ -5,6 +5,7 @@
       [innerHTML] = "outputGridType(item)"></div>
 <br  *ngIf="(i+1) % gridsize === 0"/>
 </div>
+<button [hidden]="!showRestartButton" (click)="start()" [innerHTML]="outputGamestate() + ' - Restart'"></button>
 
 
 

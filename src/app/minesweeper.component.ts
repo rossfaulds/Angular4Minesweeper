@@ -1,25 +1,39 @@
 import { Component, Input } from '@angular/core';
 import { GridItem } from './grid-item';
 
+export enum GameState {
+  Initialised,
+  Running,
+  Won,
+  Lost
+}
+
+
 @Component({
   selector: 'Minesweeper',
   templateUrl: './minesweeper.component.html',
   styleUrls: ['./minesweeper.component.css']
 })
 
-
 export class MinesweeperComponent {
 
   @Input() gridsize = 10;
   @Input() nummines = 10;
   grid: GridItem[] = [];
-
+  showRestartButton = false;
+  private currentState: GameState;
   private itemQueue: GridItem[] = [];
-  private processed: GridItem[] = [];
   private minePositions: number[] = [];
+  private processed: GridItem[] = [];
 
   ngOnInit() {
+    this.start();
+  }
+
+  start() {
     this.initialiseMinefield();
+    this.currentState = GameState.Initialised;
+    this.showRestartButton = false;
   }
 
   initialiseMinefield() {
@@ -36,20 +50,74 @@ export class MinesweeperComponent {
 
   reveal(item: GridItem, event) {
     event.stopPropagation();
+
+    if (this.currentState === GameState.Lost || this.currentState === GameState.Won) {
+      return;
+    }
+
     item.isRevealed = true;
+    this.currentState = GameState.Running;
     if (item.isBomb) {
-      console.log('boom');
+      this.currentState = GameState.Lost;
+      this.revealAll();
     }
     this.itemQueue.push(item);
     this.processQueue();
+    this.detectWin();
+  }
+
+  detectWin() {
+    let revealedCount = 0;
+    let flaggedCount = 0;
+    for (let i = 0; i < this.gridsize; i++) {
+      // this.grid[i] = [];
+      for (let j = 0; j < this.gridsize; j++) {
+        if (this.grid[(i * this.gridsize) + j].isFlagged) {
+          flaggedCount++;
+        }
+
+        if (this.grid[(i * this.gridsize) + j].isRevealed) {
+          revealedCount++;
+        }
+      }
+    }
+
+    if (flaggedCount === this.nummines && revealedCount + flaggedCount === (this.gridsize * this.gridsize)) {
+      this.currentState = GameState.Won;
+      this.revealAll();
+    }
+
+  }
+
+  revealAll() {
+    for (let i = 0; i < this.gridsize; i++) {
+      // this.grid[i] = [];
+      for (let j = 0; j < this.gridsize; j++) {
+        this.grid[(i * this.gridsize) + j].isRevealed = true;
+      }
+    }
+    this.showRestartButton = true;
   }
 
   flag(item: GridItem, event) {
     event.stopPropagation();
+    if (this.currentState === GameState.Lost || this.currentState === GameState.Won) {
+      return false;
+    }
     item.isFlagged = !item.isFlagged;
+    this.detectWin();
+
     return false;
   }
 
+  outputGamestate() {
+    if (this.currentState === GameState.Lost) {
+      return 'Lost';
+    }
+    if (this.currentState === GameState.Won) {
+      return 'Won';
+    }
+  }
   outputGridType(item) {
 
     if (item.isRevealed && item.isBomb) {
@@ -61,7 +129,7 @@ export class MinesweeperComponent {
     }
 
     if (!item.isRevealed && item.isFlagged) {
-      return '<i class="fa fa-flag" aria-hidden="true"></i>';
+      return '<i class="fa fa-flag numcolour" aria-hidden="true"></i>';
     }
 
     if (!item.isRevealed || (item.isRevealed && !item.isBomb && item.mineNeighbours === 0)) {
@@ -73,7 +141,7 @@ export class MinesweeperComponent {
     let minesPlaced = 0;
 
     while (minesPlaced < this.nummines) {
-      const minePos = Math.floor(Math.random() * (this.gridsize * this.gridsize) - 1 );
+      const minePos = Math.floor(Math.random() * (this.gridsize * this.gridsize) - 1);
       if (!this.minePositions.some(x => x === minePos)) {
         this.minePositions.push(minePos);
         this.grid[minePos].isBomb = true;
@@ -150,7 +218,7 @@ export class MinesweeperComponent {
       return;
     }
 
-    const item = this.grid[ (row * this.gridsize) + col];
+    const item = this.grid[(row * this.gridsize) + col];
 
     if (!this.itemQueue.some(x => x === item) &&
       !this.processed.some(y => y === item)) {
